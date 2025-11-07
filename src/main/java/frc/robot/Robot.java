@@ -23,11 +23,13 @@ public class Robot extends TimedRobot {
       new DifferentialDrive(m_leftDrive::set, m_rightDrive::set);
   private final XboxController m_controller = new XboxController(0);
   private final Timer m_timer = new Timer();
+  Timer m_gcTimer = new Timer();
 
   /** Called once at the beginning of the robot program. */
   public Robot() {
     SendableRegistry.addChild(m_robotDrive, m_leftDrive);
     SendableRegistry.addChild(m_robotDrive, m_rightDrive);
+    m_gcTimer.start();
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -60,6 +62,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
+    // run the garbage collector every 5 seconds
+    if (m_gcTimer.advanceIfElapsed(10)) {
+      System.gc();
+      System.out.println("Hello");
+    }
+
+    
     m_robotDrive.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX());
   }
 
